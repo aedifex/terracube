@@ -26,7 +26,7 @@ resource "aws_instance" "example" {
   vpc_security_group_ids = [aws_security_group.instance.id]
   user_data              = <<-EOF
               #!/bin/bash
-              echo "<h1>Hello from CircleCI</h1>" > index.html
+              echo "<h1>Hello from CircleCI!</h1>" > index.html
               nohup busybox httpd -f -p 8080 &
               EOF
   tags = {
