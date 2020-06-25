@@ -22,22 +22,6 @@ workflows:
             branches:
               only:
                 - master
-      - request-approval-termination:
-          type: approval
-          requires:
-            - terraform-apply
-          filters:
-            branches:
-              only:
-                - master
-      - terraform-destroy:
-          context: cdk8s
-          requires:
-            - request-approval-termination
-          filters:
-            branches:
-              only:
-                - master
 
 executors:
   default:
