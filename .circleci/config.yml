@@ -1,0 +1,61 @@
+version: 2.1
+
+workflows:
+  version: 2
+  plan-approve-apply:
+    jobs:
+      - terraform-init-plan:
+          context: cdk8s
+      - request-approval:
+          type: approval
+          requires:
+            - terraform-init-plan
+          filters:
+            branches:
+              only:
+                - master
+      - terraform-apply:
+          context: cdk8s
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - master
+
+executors:
+  default:
+    docker:
+      - image: hashicorp/terraform:light
+    working_directory: ~/src
+    resource_class: small
+
+jobs:
+  terraform-init-plan:
+    # resource_class: small
+    executor: default
+    working_directory: ~/src
+    steps:
+      - checkout
+      - run:
+          name: Init
+          command: terraform init
+      - run:
+          name: Plan
+          command: terraform plan
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - src
+
+  terraform-apply:
+    # resource_class: small
+    executor: default
+    working_directory: ~/src
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Terraform Apply
+          command: cd $PARTITION && terraform apply -auto-approve | tee ~/apply.log
+      
