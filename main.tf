@@ -1,9 +1,9 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-1"
 }
 
 resource "aws_security_group" "instance" {
-  name = "terraform-example-instance"
+  name = "terracube-example"
   ingress {
     from_port   = 8080
     to_port     = 8080
@@ -13,15 +13,19 @@ resource "aws_security_group" "instance" {
 }
 
 resource "aws_instance" "example" {
-  ami                    = "ami-0c55b159cbfafe1f0"
+  ami                    = "ami-059b818564104e5c6"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.instance.id]
-  user_data = <<-EOF
+  user_data              = <<-EOF
               #!/bin/bash
-              echo "Hello, World" > index.html
+              echo "<h1>Hello from CircleCI</h1>" > index.html
               nohup busybox httpd -f -p 8080 &
               EOF
   tags = {
     Name = "terraform-example"
   }
+}
+
+output "instance_ips" {
+  value = ["${aws_instance.example.*.public_ip}"]
 }

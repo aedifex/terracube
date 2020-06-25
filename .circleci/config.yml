@@ -22,17 +22,33 @@ workflows:
             branches:
               only:
                 - master
+      - request-approval-termination:
+          type: approval
+          requires:
+            - terraform-apply
+          filters:
+            branches:
+              only:
+                - master
+      - terraform-destroy:
+          context: cdk8s
+          requires:
+            - request-approval-termination
+          filters:
+            branches:
+              only:
+                - master
 
 executors:
   default:
     docker:
       - image: hashicorp/terraform:light
     working_directory: ~/src
+    # resource_class: small
     resource_class: small
 
 jobs:
   terraform-init-plan:
-    # resource_class: small
     executor: default
     working_directory: ~/src
     steps:
@@ -57,5 +73,5 @@ jobs:
           at: ~/
       - run:
           name: Terraform Apply
-          command: cd $PARTITION && terraform apply -auto-approve | tee ~/apply.log
+          command: terraform apply -auto-approve
       
