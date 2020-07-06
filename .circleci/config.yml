@@ -1,3 +1,5 @@
+# CircleCI + Terraform = terracube
+
 version: 2.1
 
 workflows:
@@ -5,7 +7,7 @@ workflows:
   plan-approve-apply:
     jobs:
       - terraform-init-plan:
-          context: cdk8s
+          context: <your context here>
       - request-approval:
           type: approval
           requires:
@@ -15,7 +17,7 @@ workflows:
               only:
                 - master
       - terraform-apply:
-          context: cdk8s
+          context: <your context here>
           requires:
             - request-approval
           filters:
@@ -28,7 +30,6 @@ executors:
     docker:
       - image: hashicorp/terraform:light
     working_directory: ~/src
-    # resource_class: small
     resource_class: small
 
 jobs:
@@ -49,7 +50,6 @@ jobs:
             - src
 
   terraform-apply:
-    # resource_class: small
     executor: default
     working_directory: ~/src
     steps:

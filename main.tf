@@ -1,5 +1,8 @@
 provider "aws" {
   region = "us-west-1"
+  # Uncomment if you store your aws credentials file unconventionally.
+  # shared_credentials_file = "~/.aws/credentials"
+  # profile = var.aws_instance_profile
 }
 
 terraform {
