@@ -1,8 +1,9 @@
 # terracube
 
-“There are only two hard problems in computer science: cache invalidation, off-by-1 errors, and naming things” – random software professional
+“There are only two hard problems in computer science: cache invalidation, off-by-1 errors, and naming things” 
+– random software professional
 
-Enter Terracube, a lightweight sample application demonstrating continuously deployment of infrastructure using CircleCI and Terraform.
+Enter Terracube, a simple and elegant sample application demonstrating continuously deployment of infrastructure using CircleCI and Terraform.
 
 ## Getting Started
 
