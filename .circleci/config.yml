@@ -34,12 +34,17 @@ executors:
     docker:
       - image: hashicorp/terraform:light
     working_directory: ~/src
-    resource_class: small
+    parameters:
+      resource_class:
+        type: string
+        default: "small"
+    resource_class: << parameters.resource_class >>
 
 jobs:
   terraform-init-plan:
     executor: default
     working_directory: ~/src
+    resource_class: medium
     steps:
       - checkout
       - run:
