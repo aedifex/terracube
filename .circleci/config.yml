@@ -2,12 +2,16 @@
 
 version: 2.1
 
+secrets: &secrets
+    context: cdk8s
+
+
 workflows:
   version: 2
   plan-approve-apply:
     jobs:
       - terraform-init-plan:
-          context: <your context here>
+          <<: *secrets
       - request-approval:
           type: approval
           requires:
@@ -17,7 +21,7 @@ workflows:
               only:
                 - master
       - terraform-apply:
-          context: <your context here>
+          <<: *secrets
           requires:
             - request-approval
           filters:
