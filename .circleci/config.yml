@@ -5,61 +5,23 @@ version: 2.1
 secrets: &secrets
     context: cdk8s
 
-
+orbs:
+  tf: ngs/terraform@0.0.1
 workflows:
-  version: 2
-  plan-approve-apply:
+  tf:
     jobs:
-      - terraform-init-plan:
+      - tf/validate:
           <<: *secrets
-      - request-approval:
-          type: approval
+          name: validate
+      - tf/plan:
+          <<: *secrets
+          name: plan
           requires:
-            - terraform-init-plan
+            - validate
+      - tf/apply:
+          name: apply
+          requires:
+            - plan
           filters:
             branches:
-              only:
-                - master
-      - terraform-apply:
-          <<: *secrets
-          requires:
-            - request-approval
-          filters:
-            branches:
-              only:
-                - master
-
-executors:
-  default:
-    docker:
-      - image: hashicorp/terraform:light
-    working_directory: ~/src
-    resource_class: small
-
-jobs:
-  terraform-init-plan:
-    executor: default
-    working_directory: ~/src
-    steps:
-      - checkout
-      - run:
-          name: Init
-          command: terraform init
-      - run:
-          name: Plan
-          command: terraform plan
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - src
-
-  terraform-apply:
-    executor: default
-    working_directory: ~/src
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Terraform Apply
-          command: terraform apply -auto-approve
-      
+              only: master
