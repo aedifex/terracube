@@ -1,70 +1,40 @@
-# CircleCI + Terraform = terracube
-
 version: 2.1
 
-secrets: &secrets
-    context: cdk8s
-
+# codify structure of orb inline
+orbs:
+  # orb name @ top
+  tf:
+    # the 'tf' orb contains the following jobs
+    jobs:
+      # pass a map of jobs
+      init: # init terraform directory
+        executor: terraform-executor
+        working_directory: "~/src"
+        steps:
+          - t:
+            # nest the param under the command
+              cmd_name: "init"
+    commands:
+      t:
+        parameters:
+          cmd_name:
+            type: string
+            default: ""
+        steps:
+          - run: terraform << parameters.cmd_name >>
+    executors:
+      terraform-executor:
+        parameters:
+          working_dir:
+            type: string
+            default: "~/src"
+        # specify executor type
+        docker:
+          - image: hashicorp/terraform:light
+        working_directory: << parameters.working_dir >>
 
 workflows:
-  version: 2
   plan-approve-apply:
     jobs:
-      - terraform-init-plan:
-          <<: *secrets
-      - request-approval:
-          type: approval
-          requires:
-            - terraform-init-plan
-          filters:
-            branches:
-              only:
-                - master
-      - terraform-apply:
-          <<: *secrets
-          requires:
-            - request-approval
-          filters:
-            branches:
-              only:
-                - master
-
-executors:
-  default:
-    docker:
-      - image: hashicorp/terraform:light
-    working_directory: ~/src
-    parameters:
-      resource_class:
-        type: string
-        default: "small"
-    resource_class: << parameters.resource_class >>
-
-jobs:
-  terraform-init-plan:
-    executor: default
-    working_directory: ~/src
-    resource_class: medium
-    steps:
-      - checkout
-      - run:
-          name: Init
-          command: terraform init
-      - run:
-          name: Plan
-          command: terraform plan
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - src
-
-  terraform-apply:
-    executor: default
-    working_directory: ~/src
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Terraform Apply
-          command: terraform apply -auto-approve
-      
+      - tf/init
+        
