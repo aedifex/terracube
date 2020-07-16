@@ -1,7 +1,7 @@
 version: 2.1
 
-secrets: &secrets
-#     context: cdk8s
+# export PLAN_ARGS
+# terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS "$module_path"
 
 aliases:
   params:
@@ -24,7 +24,7 @@ orbs:
         steps:
           - checkout
           - t:
-            # nest the param under the command
+            # nest the param(s) under the command declaration
               cmd_name: "init"
       # going to codify the rest of the "dummy" job declarations
       validate:
@@ -50,7 +50,9 @@ orbs:
         working_directory: "/src"
         steps:
           - checkout
+          - destroy
     commands:
+      # t is a generalized abstraction
       t:
         parameters:
           cmd_name:
@@ -60,13 +62,40 @@ orbs:
           - run:
               name: terraform << parameters.cmd_name >>
               command: terraform << parameters.cmd_name >>
+      # all of the top level commands included in the atomic
+      # job declarations will be made available as individual commands
+      init:
+        parameters:
+          ## param map goes here
+          options:
+            type: string
+            default: ""
+        steps:
+          - run:
+              name: terraform init
+              command: terraform init
+      validate:
+        steps:
+          - run:
+              name: terraform validate
+              command: terraform validate
+      fmt:
+        steps:
+          - run:
+              name: terraform fmt
+              command: terraform fmt
+      destroy:
+        steps:
+          - run:
+              name: terraform destroy
+              command:  terraform destroy -input=false -no-color -auto-approve
     executors:
       terraform-executor:
         parameters:
           working_dir:
             type: string
             default: "~/src"
-        # specify executor type
+        # specify executor type ~ any reason to make resource class a param?
         docker:
           - image: hashicorp/terraform:light
         working_directory: << parameters.working_dir >>
@@ -74,8 +103,7 @@ orbs:
 workflows:
   plan-approve-apply:
     jobs:
-      - tf/init:
+      - tf/destroy:
           <<: *secrets
-      - tf/validate:
-          <<: *secrets
+      
         
