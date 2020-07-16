@@ -65,12 +65,7 @@ orbs:
         steps:
           - checkout
           # execute terraform lifecycle
-          - init
-          - fmt
-          - validate
-          - plan
-          - apply
-          - destroy
+          <<: *lifecycle_seq
     commands:
       # t is a generalized abstraction
       t:
