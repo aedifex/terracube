@@ -10,6 +10,13 @@ aliases:
       description: "Path to the terraform module"
     secrets: &secrets
       context: cdk8s
+    lifecycle_seq: &lifecycle_seq
+      - init
+      - fmt
+      - validate
+      - plan
+      - apply
+      - destroy
 
 # codify structure of orb inline
 orbs:
@@ -51,6 +58,19 @@ orbs:
         steps:
           - checkout
           - destroy
+      test-command-sequence:
+        description: perform e2e tests on command sequence
+        executor: terraform-executor
+        working_directory: "/src"
+        steps:
+          - checkout
+          # execute terraform lifecycle
+          - init
+          - fmt
+          - validate
+          - plan
+          - apply
+          - destroy
     commands:
       # t is a generalized abstraction
       t:
@@ -84,6 +104,17 @@ orbs:
           - run:
               name: terraform fmt
               command: terraform fmt
+      plan:
+        steps:
+          - run:
+            # need to parameterize input and output
+              name: terraform plan
+              command: terraform plan
+      apply:
+        steps:
+          - run:
+              name: terraform apply
+              command: terraform apply -auto-approve
       destroy:
         steps:
           - run:
@@ -103,7 +134,9 @@ orbs:
 workflows:
   plan-approve-apply:
     jobs:
-      - tf/destroy:
+      #- tf/destroy:
+      #    <<: *secrets
+      - tf/test-command-sequence:
           <<: *secrets
       
         
