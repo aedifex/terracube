@@ -1,10 +1,15 @@
 version: 2.1
 
+secrets: &secrets
+#     context: cdk8s
+
 aliases:
   params:
     path: &path
       type: "string"
       description: "Path to the terraform module"
+    secrets: &secrets
+      context: cdk8s
 
 # codify structure of orb inline
 orbs:
@@ -69,6 +74,8 @@ orbs:
 workflows:
   plan-approve-apply:
     jobs:
-      - tf/init
-      - tf/validate
+      - tf/init:
+          <<: *secrets
+      - tf/validate:
+          <<: *secrets
         
