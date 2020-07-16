@@ -1,5 +1,11 @@
 version: 2.1
 
+aliases:
+  params:
+    path: &path
+      type: "string"
+      description: "Path to the terraform module"
+
 # codify structure of orb inline
 orbs:
   # orb name @ top
@@ -11,9 +17,28 @@ orbs:
         executor: terraform-executor
         working_directory: "~/src"
         steps:
+          - checkout
           - t:
             # nest the param under the command
               cmd_name: "init"
+      # going to codify the rest of the "dummy" job declarations
+      validate:
+        executor: terraform-executor
+        working_directory: "/src"
+        steps:
+          - checkout
+          - t:
+              cmd_name: "validate"
+      plan:
+        executor: terraform-executor
+        working_directory: "/src"
+      apply:
+        description: "Apply a Terraform plan"
+        executor: terraform-executor
+        working_directory: "/src"
+      destroy:
+        executor: terraform-executor
+        working_directory: "/src"
     commands:
       t:
         parameters:
@@ -21,7 +46,9 @@ orbs:
             type: string
             default: ""
         steps:
-          - run: terraform << parameters.cmd_name >>
+          - run:
+              name: terraform << parameters.cmd_name >>
+              command: terraform << parameters.cmd_name >>
     executors:
       terraform-executor:
         parameters:
@@ -37,4 +64,5 @@ workflows:
   plan-approve-apply:
     jobs:
       - tf/init
+      - tf/validate
         
