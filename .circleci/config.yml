@@ -32,13 +32,19 @@ orbs:
       plan:
         executor: terraform-executor
         working_directory: "/src"
+        steps:
+          - checkout
       apply:
         description: "Apply a Terraform plan"
         executor: terraform-executor
         working_directory: "/src"
+        steps:
+          - checkout
       destroy:
         executor: terraform-executor
         working_directory: "/src"
+        steps:
+          - checkout
     commands:
       t:
         parameters:
