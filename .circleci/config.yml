@@ -63,7 +63,7 @@ orbs:
         executor: terraform-executor
         working_directory: "/src"
         steps:
-          - checkout
+          - checkout:
           # execute terraform lifecycle
           <<: *lifecycle_seq
     commands:
