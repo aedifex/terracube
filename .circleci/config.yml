@@ -2,6 +2,8 @@ version: 2.1
 
 # export PLAN_ARGS
 # terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS "$module_path"
+# terraform output -json > "<< parameters.output_path >>"
+
 
 secrets: &secrets
   context: cdk8s
@@ -108,6 +110,9 @@ orbs:
           - checkout
           - validate:
               path: "."
+          - apply:
+              path: "."
+              auto_approve: true
 # Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
@@ -148,6 +153,7 @@ orbs:
                 # what is the significance of no color?
                 terraform validate -no-color "$module_path"
 
+
       fmt:
         steps:
           - run:
@@ -171,10 +177,20 @@ orbs:
               name: terraform plan
               command: terraform plan
       apply:
+        description: "Apply Terraform plan"
+        parameters:
+          <<: *path
+          <<: *auto_approve
         steps:
           - run:
               name: terraform apply
-              command: terraform apply -auto-approve
+              command: |
+                if [[ "<< parameters.auto_approve >>" == "true" ]];
+                  echo "Automatically applying plan"
+                  terraform apply -auto-approve
+                else
+                  echo "Manual approval required"
+                fi
       destroy:
         steps:
           - run:
