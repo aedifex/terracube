@@ -101,9 +101,9 @@ orbs:
         working_directory: "~/src"
         steps:
           - checkout
-          - validate:
-              path: "~/src"
-
+          - validate
+              # path: "~/src"
+# Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
       t:
@@ -148,6 +148,16 @@ orbs:
               name: terraform fmt
               command: terraform fmt
       plan:
+        description: "Generate Terraform plan"
+        # ovo parameterizes this, e.g.
+        # parameters: &plan-parameters
+        <<: *path
+        <<: *workspace
+        <<: *backend_config
+        <<: *backend_config_file
+        <<: *var
+        <<: *var_file
+        <<: *parallelism
         steps:
           - run:
             # need to parameterize input and output
