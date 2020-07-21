@@ -37,6 +37,11 @@ aliases:
         type: "boolean"
         description: "Automatically approve and apply plan"
         default: false
+    workspace: &workspace
+      workspace:
+        type: "string"
+        description: "Name of the terraform workspace"
+        default: "default"
 
 
 # codify structure of orb inline
@@ -101,7 +106,6 @@ orbs:
         working_directory: "~/src"
         steps:
           - checkout
-          - init
           - validate:
               path: "."
 # Emphasis will be placed on individual command declarations
@@ -134,6 +138,7 @@ orbs:
         parameters: &validate-parameters
           <<: *path
         steps:
+          - init
           - run:
               name: terraform validate
               command: |
