@@ -152,12 +152,12 @@ orbs:
         # ovo parameterizes this, e.g.
         # parameters: &plan-parameters
         <<: *path
-        <<: *workspace
-        <<: *backend_config
-        <<: *backend_config_file
-        <<: *var
-        <<: *var_file
-        <<: *parallelism
+        #<<: *workspace
+        #<<: *backend_config
+        #<<: *backend_config_file
+        #<<: *var
+        #<<: *var_file
+        #<<: *parallelism
         steps:
           - run:
             # need to parameterize input and output
