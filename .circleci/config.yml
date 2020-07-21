@@ -3,13 +3,16 @@ version: 2.1
 # export PLAN_ARGS
 # terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS "$module_path"
 
+secrets: &secrets
+  context: cdk8s
+
 aliases:
+  # command / job parameters
   params:
     path: &path
-      type: "string"
-      description: "Path to the terraform module"
-    secrets: &secrets
-      context: cdk8s
+      path:
+        type: "string"
+        description: "Path to the terraform module"
     lifecycle_seq: &lifecycle_seq
       - init
       - fmt
@@ -17,6 +20,24 @@ aliases:
       - plan
       - apply
       - destroy
+    # Borrowed from ovotech 
+    var: &var
+      var:
+        type: "string"
+        description: "Comma separated list of vars to set, e.g. 'foo=bar'"
+        default: ""
+    var_file: &var_file
+      var_file:
+        type: "string"
+        description: "Comma separated list of var file paths"
+        default: ""
+    # a useful / important feature
+    auto_approve: &auto_approve
+      auto_approve:
+        type: "boolean"
+        description: "Automatically approve and apply plan"
+        default: false
+
 
 # codify structure of orb inline
 orbs:
@@ -35,6 +56,9 @@ orbs:
               cmd_name: "init"
       # going to codify the rest of the "dummy" job declarations
       validate:
+        parameters:
+          # many of these jobs share common params
+
         executor: terraform-executor
         working_directory: "/src"
         steps:
@@ -63,9 +87,36 @@ orbs:
         executor: terraform-executor
         working_directory: "/src"
         steps:
-          - checkout:
+          - checkout
           # execute terraform lifecycle
-          <<: *lifecycle_seq
+          - init
+          - fmt
+          - validate
+          - plan
+          - apply
+          - destroy
+      gent:
+        description: "generic command"
+        executor: terraform-executor
+        working_directory: "~/src"
+        steps:
+          - checkout
+          - validate:
+              path: "~/src"
+      test:
+        parameters:
+          c:
+            description: "test"
+            type: string
+            default: ""
+        description: "generic command"
+        executor: terraform-executor
+        working_directory: "~/src"
+        steps:
+          - checkout
+          - run: << parameters.c >>
+
+
     commands:
       # t is a generalized abstraction
       t:
@@ -90,10 +141,20 @@ orbs:
               name: terraform init
               command: terraform init
       validate:
+        description: "Validate TF files"
+        # create an anchor within an anchor
+        parameters: &validate-parameters
+          <<: *path
         steps:
           - run:
               name: terraform validate
-              command: terraform validate
+              command: |
+                # 'path' is a required parameter, save it as module_path
+                readonly module_path="<< parameters.path >>"
+                export path=$module_path
+                # what is the significance of no color?
+                terraform validate -no-color "$module_path"
+
       fmt:
         steps:
           - run:
@@ -131,7 +192,10 @@ workflows:
     jobs:
       #- tf/destroy:
       #    <<: *secrets
-      - tf/test-command-sequence:
+      #- tf/test-command-sequence:
+      #    <<: *secrets
+      - tf/test:
+          c: tf/validate
           <<: *secrets
       
         
