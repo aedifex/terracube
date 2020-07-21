@@ -103,19 +103,6 @@ orbs:
           - checkout
           - validate:
               path: "~/src"
-      test:
-        parameters:
-          c:
-            description: "test"
-            type: string
-            default: ""
-        description: "generic command"
-        executor: terraform-executor
-        working_directory: "~/src"
-        steps:
-          - checkout
-          - run: << parameters.c >>
-
 
     commands:
       # t is a generalized abstraction
@@ -194,8 +181,7 @@ workflows:
       #    <<: *secrets
       #- tf/test-command-sequence:
       #    <<: *secrets
-      - tf/test:
-          c: tf/validate
+      - tf/gent:
           <<: *secrets
       
         
