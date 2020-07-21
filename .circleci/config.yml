@@ -101,6 +101,7 @@ orbs:
         working_directory: "~/src"
         steps:
           - checkout
+          - init
           - validate:
               path: "."
 # Emphasis will be placed on individual command declarations
