@@ -212,8 +212,8 @@ orbs:
         steps:
           - run:
               name: terraform destroy
-              command:  
-                #terraform destroy -input=false -no-color -auto-approve
+              command: |
+                terraform destroy -input=false -no-color -auto-approve
                 # export PLAN_ARGS
                 # terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS
     executors:
