@@ -4,7 +4,9 @@ version: 2.1
 # terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS "$module_path"
 # terraform output -json > "<< parameters.output_path >>"
 # unset TF_WORKSPACE
-
+# terraform apply -var="image_id=ami-abc123"
+# terraform apply -var='image_id_map={"us-east-1":"ami-abc123","us-east-2":"ami-def456"}'
+# terraform apply -var='image_id_list=["ami-abc123","ami-def456"]'
 
 secrets: &secrets
   context: cdk8s
@@ -27,7 +29,7 @@ aliases:
     var: &var
       var:
         type: "string"
-        description: "Comma separated list of vars to set, e.g. 'foo=bar'"
+        description: "Comma separated list of vars to set, e.g. 'foo=bar,bas=foo'"
         default: ""
     var_file: &var_file
       var_file:
@@ -117,9 +119,10 @@ orbs:
           - apply:
               path: "."
               auto_approve: true
-          - destroy:
-              path: "."
-              workspace: "testing"
+              var: "tag1=one,tag2=two"
+          #- destroy:
+          #    path: "."
+          #    workspace: "testing"
 # Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
@@ -201,9 +204,15 @@ orbs:
           - run:
               name: terraform apply
               command: |
+                if [[ -n "<< parameters.var >>" ]]; then
+                    for var in $(echo "<< parameters.var >>" | tr ',' '\n'); do
+                        PLAN_ARGS="$PLAN_ARGS -var $var"
+                    done
+                fi
+                export PLAN_ARGS
                 if [[ "<< parameters.auto_approve >>" == "true" ]];
                   echo "Automatically applying plan"
-                  terraform apply -auto-approve
+                  terraform apply -auto-approve $PLAN_ARGS
                 then
                   echo "Manual approval required"
                 fi
