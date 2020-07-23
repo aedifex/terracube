@@ -114,9 +114,9 @@ orbs:
           - plan:
               path: "."
               workspace: "testing"
-          #- apply:
-          #    path: "."
-          #    auto_approve: true
+          - apply:
+              path: "."
+              auto_approve: true
 # Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
