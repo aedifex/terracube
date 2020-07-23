@@ -18,14 +18,6 @@ aliases:
       path:
         type: "string"
         description: "Path to the terraform module"
-    lifecycle_seq: &lifecycle_seq
-      - init
-      - fmt
-      - validate
-      - plan
-      - apply
-      - destroy
-    # Borrowed from ovotech 
     var: &var
       var:
         type: "string"
@@ -36,7 +28,6 @@ aliases:
         type: "string"
         description: "Comma separated list of var file paths"
         default: ""
-    # a useful / important feature
     auto_approve: &auto_approve
       auto_approve:
         type: "boolean"
@@ -114,13 +105,13 @@ orbs:
           - validate:
               path: "."
           - plan:
-              path: "."
+              path: "/tmp"
               workspace: "testing"
-          - apply:
-              path: "."
-              auto_approve: true
+          #- apply:
+          #    path: "."
+          #    auto_approve: true
               # var : "tag1=one,tag2=two"
-              var_file: "terraform.tfvars"
+          #    var_file: "terraform.tfvars"
           #- destroy:
           #    path: "."
           #    workspace: "testing"
@@ -176,10 +167,10 @@ orbs:
         parameters:
           <<: *path
           <<: *workspace
-        #<<: *backend_config
-        #<<: *backend_config_file
-        #<<: *var
-        #<<: *var_file
+          <<: *backend_config
+          <<: *backend_config_file
+          <<: *var
+          <<: *var_file
         #<<: *parallelism
         steps:
           # TF init
@@ -188,6 +179,14 @@ orbs:
             # need to parameterize input and output
               name: terraform plan
               command: |
+                # 'path' is a required parameter, save it as module_path
+                readonly module_path="<< parameters.path >>"
+                export path=$module_path
+
+                if [[ ! -d "$module_path" ]]; then
+                  echo "Path does not exist: \"$module_path\""
+                  exit 1
+                fi
                 # Set workspace from parameter, allowing it to be overridden by TF_WORKSPACE.
                 # If TF_WORKSPACE is set we don't want terraform init to use the value, in the case we are running new_workspace.sh this would cause an error
                 readonly workspace_parameter="<< parameters.workspace >>"
@@ -195,7 +194,7 @@ orbs:
                 export workspace
                 unset TF_WORKSPACE
                 terraform workspace select -no-color "$workspace"
-                terraform plan
+                terraform plan $module_path
       apply:
         description: "Apply Terraform plan"
         parameters:
