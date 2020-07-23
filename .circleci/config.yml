@@ -3,6 +3,7 @@ version: 2.1
 # export PLAN_ARGS
 # terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS "$module_path"
 # terraform output -json > "<< parameters.output_path >>"
+# unset TF_WORKSPACE
 
 
 secrets: &secrets
@@ -110,9 +111,12 @@ orbs:
           - checkout
           - validate:
               path: "."
-          - apply:
+          - plan:
               path: "."
-              auto_approve: true
+              workspace: "example1"
+          #- apply:
+          #    path: "."
+          #    auto_approve: true
 # Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
@@ -153,7 +157,6 @@ orbs:
                 # what is the significance of no color?
                 terraform validate -no-color "$module_path"
 
-
       fmt:
         steps:
           - run:
@@ -165,17 +168,28 @@ orbs:
         # parameters: &plan-parameters
         parameters:
           <<: *path
-        #<<: *workspace
+          <<: *workspace
         #<<: *backend_config
         #<<: *backend_config_file
         #<<: *var
         #<<: *var_file
         #<<: *parallelism
         steps:
+          # TF init
+          - init
           - run:
             # need to parameterize input and output
               name: terraform plan
-              command: terraform plan
+              command: |
+                # Set workspace from parameter, allowing it to be overridden by TF_WORKSPACE.
+                # If TF_WORKSPACE is set we don't want terraform init to use the value, in the case we are running new_workspace.sh this would cause an error
+                readonly workspace_parameter="<< parameters.workspace >>"
+                readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
+                export workspace
+                unset TF_WORKSPACE
+                readonly workspace_parameter="<< parameters.workspace >>"
+                terraform workspace select -no-color "$workspace"
+                terraform plan
       apply:
         description: "Apply Terraform plan"
         parameters:
