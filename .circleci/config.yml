@@ -113,7 +113,7 @@ orbs:
               path: "."
           - plan:
               path: "."
-              workspace: "example1"
+              workspace: "testing"
           #- apply:
           #    path: "."
           #    auto_approve: true
