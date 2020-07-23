@@ -187,7 +187,6 @@ orbs:
                 readonly workspace="${TF_WORKSPACE:-$workspace_parameter}"
                 export workspace
                 unset TF_WORKSPACE
-                readonly workspace_parameter="<< parameters.workspace >>"
                 terraform workspace select -no-color "$workspace"
                 terraform plan
       apply:
