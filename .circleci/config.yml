@@ -119,7 +119,8 @@ orbs:
           - apply:
               path: "."
               auto_approve: true
-              var: "tag1=one,tag2=two"
+              # var : "tag1=one,tag2=two"
+              var-file: "terraform.tfvars"
           #- destroy:
           #    path: "."
           #    workspace: "testing"
@@ -201,6 +202,7 @@ orbs:
           <<: *path
           <<: *auto_approve
           <<: *var
+          <<: *var-file
         steps:
           - run:
               name: terraform apply
@@ -209,6 +211,18 @@ orbs:
                     for var in $(echo "<< parameters.var >>" | tr ',' '\n'); do
                         PLAN_ARGS="$PLAN_ARGS -var $var"
                     done
+                fi
+                if [[ -n "<< parameters.var_file >>" ]]; then
+                for file in $(echo "<< parameters.var_file >>" | tr ',' '\n'); do
+                    if [[ -f "$file" ]]; then
+                        PLAN_ARGS="$PLAN_ARGS -var-file=$file"
+                    elif [[ -f "$module_path/$file" ]]; then
+                        PLAN_ARGS="$PLAN_ARGS -var-file=$module_path/$file"
+                    else
+                        echo "Var file '$file' wasn't found" >&2
+                        exit 1
+                    fi
+                done
                 fi
                 export PLAN_ARGS
                 if [[ "<< parameters.auto_approve >>" == "true" ]];
