@@ -201,14 +201,21 @@ orbs:
                 if [[ "<< parameters.auto_approve >>" == "true" ]];
                   echo "Automatically applying plan"
                   terraform apply -auto-approve
-                else
+                then
                   echo "Manual approval required"
                 fi
       destroy:
+        description: "Destroy current state"
+        parameters:
+          <<: *path
+          <<: *workspace
         steps:
           - run:
               name: terraform destroy
-              command:  terraform destroy -input=false -no-color -auto-approve
+              command:  
+                #terraform destroy -input=false -no-color -auto-approve
+                # export PLAN_ARGS
+                # terraform destroy -input=false -no-color -auto-approve $PLAN_ARGS
     executors:
       terraform-executor:
         parameters:
