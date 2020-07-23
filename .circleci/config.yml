@@ -117,6 +117,9 @@ orbs:
           - apply:
               path: "."
               auto_approve: true
+          - destroy:
+              path: "."
+              workspace: "testing"
 # Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
