@@ -200,6 +200,7 @@ orbs:
         parameters:
           <<: *path
           <<: *auto_approve
+          <<: *var
         steps:
           - run:
               name: terraform apply

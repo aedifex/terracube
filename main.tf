@@ -23,6 +23,9 @@ resource "aws_security_group" "instance" {
   }
 }
 
+variable "tag1" {}
+variable "tag2" {}
+
 resource "aws_instance" "example" {
   ami                    = "ami-059b818564104e5c6"
   instance_type          = "t2.micro"
@@ -34,6 +37,8 @@ resource "aws_instance" "example" {
               EOF
   tags = {
     Name = "terraform-example"
+    Tag1 = var.tag1
+    Tag2 = var.tag2
   }
 }
 
