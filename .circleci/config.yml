@@ -122,9 +122,9 @@ orbs:
               var : "tag1=one,tag2=two"
               workspace: "testing"
           #    var_file: "terraform.tfvars"
-          #- destroy:
-          #    path: "."
-          #    workspace: "testing"
+          - destroy:
+              path: "."
+              workspace: "testing"
 # Emphasis will be placed on individual command declarations
     commands:
       # t is a generalized abstraction
