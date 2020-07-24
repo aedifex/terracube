@@ -120,7 +120,7 @@ orbs:
               path: "."
               auto_approve: true
               var : "tag1=one,tag2=two"
-              workspace: "lovelolo"
+              workspace: "testing"
           #    var_file: "terraform.tfvars"
           #- destroy:
           #    path: "."
