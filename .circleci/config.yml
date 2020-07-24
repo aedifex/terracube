@@ -260,6 +260,9 @@ orbs:
         description: "Destroy current state"
         parameters:
           <<: *path
+          <<: *auto_approve
+          <<: *var
+          <<: *var_file
           <<: *workspace
         steps:
           - run:
