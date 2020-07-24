@@ -309,9 +309,12 @@ orbs:
           working_dir:
             type: string
             default: "~/src"
+          image:
+            type: string
+            default: hashicorp/terraform:light
         # specify executor type ~ any reason to make resource class a param?
         docker:
-          - image: hashicorp/terraform:light
+          - image: << parameters.image >>
         working_directory: << parameters.working_dir >>
 
 workflows:
