@@ -43,6 +43,11 @@ aliases:
         type: "string"
         description: "Comma separated list of backend configs to set, e.g. 'foo=bar'"
         default: ""
+    backend_config_file: &backend_config_file
+      backend_config_file:
+        type: "string"
+        description: "Path to a backend config file"
+        default: ""
 
 # codify structure of orb inline
 orbs:
