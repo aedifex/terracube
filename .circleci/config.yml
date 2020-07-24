@@ -212,6 +212,7 @@ orbs:
           <<: *auto_approve
           <<: *var
           <<: *var_file
+          <<: *workspace
         steps:
           - run:
               name: terraform apply
