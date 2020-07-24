@@ -114,7 +114,7 @@ orbs:
           - validate:
               path: "."
           - plan:
-              path: "/tmp"
+              path: "."
               workspace: "testing"
           - apply:
               path: "."
