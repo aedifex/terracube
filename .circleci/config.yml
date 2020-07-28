@@ -12,9 +12,9 @@ jobs:
     steps:
       - checkout
       - terraform/init:
-          path: "~/src"
+          path: "."
       - terraform/validate:
-          path: "~/src"
+          path: "."
 
 workflows:
   validate-commands:
