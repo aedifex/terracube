@@ -68,6 +68,10 @@ orbs:
             default: false
             description: "Do cool stuff with workspaces"
             type: boolean
+          workspace-root-dir:
+            default: "."
+            description: "circleci workspaces...not terraform"
+            type: string
         executor: terraform-executor
         working_directory: "~/src"
         steps:
