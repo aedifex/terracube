@@ -8,11 +8,15 @@ version: 2.1
 # terraform apply -var='image_id_map={"us-east-1":"ami-abc123","us-east-2":"ami-def456"}'
 # terraform apply -var='image_id_list=["ami-abc123","ami-def456"]'
 
+# Misc notes
+# circle-workspace - we need a way to move a plan around, with params
+
+
 secrets: &secrets
   context: cdk8s
 
+# Is there a way to replicate this sans aliases?
 aliases:
-  # command / job parameters
   params:
     path: &path
       path:
@@ -49,7 +53,7 @@ aliases:
         description: "Path to a backend config file"
         default: ""
 
-# circle-workspace
+
 
 # codify structure of orb inline
 orbs:
@@ -59,13 +63,23 @@ orbs:
     jobs:
       # pass a map of jobs
       init: # init terraform directory
+        parameters:
+          mount-workspace:
+            default: false
+            description: "Do cool stuff with workspaces"
+            type: boolean
         executor: terraform-executor
         working_directory: "~/src"
         steps:
           - checkout
-          - t:
-            # nest the param(s) under the command declaration
-              cmd_name: "init"
+          - when:
+              condition: << parameters.mount-workspace >>
+              steps:
+                - attach_workspace:
+                    at: << parameters.workspace-root-dir >>
+          - init:
+              path: "."
+            # init params
       # going to codify the rest of the "dummy" job declarations
       validate:
         parameters:
@@ -143,21 +157,39 @@ orbs:
       # job declarations will be made available as individual commands
       init:
         parameters:
-          ## param map goes here
+          # var && var_file might not be needed
+          <<: *path
+          <<: *workspace
+          <<: *backend_config
+          <<: *backend_config_file
+          <<: *var
+          <<: *var_file
           options:
             type: string
             default: ""
         steps:
           - run:
               name: terraform init
-              command: terraform init
+              # command: terraform init
+              command: |
+                # 'path' is a required parameter, save it as module_path
+                readonly module_path="<< parameters.path >>"
+                export path=$module_path
+
+                if [[ ! -d "$module_path" ]]; then
+                  echo "Path does not exist: \"$module_path\""
+                  exit 1
+                fi
+                # terraform init -input=false -no-color $INIT_ARGS "$module_path"
+                terraform init -input=false -no-color "$module_path"
       validate:
         description: "Validate TF files"
         # create an anchor within an anchor
         parameters: &validate-parameters
           <<: *path
         steps:
-          - init
+          - init:
+              path: "."
           - run:
               name: terraform validate
               command: |
@@ -186,7 +218,8 @@ orbs:
         #<<: *parallelism
         steps:
           # TF init
-          - init
+          - init:
+              path: "."
           - run:
             # need to parameterize input and output
               name: terraform plan
@@ -326,7 +359,9 @@ workflows:
       #    <<: *secrets
       #- tf/test-command-sequence:
       #    <<: *secrets
-      - tf/gent:
+      #- tf/gent:
+      #    <<: *secrets
+      - tf/init:
           <<: *secrets
       
         
