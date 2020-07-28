@@ -16,6 +16,12 @@ jobs:
           path: "."
       - terraform/validate:
           path: "."
+      - terraform/fmt:
+          path: "."
+      - terraform/plan:
+          path: "."
+      - terraform/apply:
+          path: "."
 
 workflows:
   validate-commands:
