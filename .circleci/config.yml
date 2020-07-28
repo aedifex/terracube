@@ -15,3 +15,8 @@ jobs:
           path: "~/src"
       - terraform/validate:
           path: "~/src"
+
+workflows:
+  validate-commands:
+    jobs:
+      - test-terraform-lifecycle
