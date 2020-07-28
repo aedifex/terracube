@@ -1,7 +1,8 @@
 version: 2.1
 
-# add your orb below, to be used in integration tests (note: a @dev:alpha
-# release must exist.);
+secrets: &secrets
+  context: cdk8s
+
 orbs:
   terraform: circleci/terraform@dev:alpha
 
@@ -19,4 +20,5 @@ jobs:
 workflows:
   validate-commands:
     jobs:
-      - test-terraform-lifecycle
+      - test-terraform-lifecycle:
+          <<: *secrets
