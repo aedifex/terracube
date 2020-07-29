@@ -28,5 +28,11 @@ jobs:
 workflows:
   validate-commands:
     jobs:
-      - test-terraform-lifecycle:
+      #- test-terraform-lifecycle:
+      #    <<: *secrets
+      - terraform/plan:
+          persist-workspace: true
+          <<: *secrets
+      - terraform/apply:
+          attach-workspace: true
           <<: *secrets
