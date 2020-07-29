@@ -34,5 +34,8 @@ workflows:
           persist-workspace: true
           <<: *secrets
       - terraform/apply:
+          requires:
+            - terraform/plan
+          checkout: false
           attach-workspace: true
           <<: *secrets
