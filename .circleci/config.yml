@@ -22,6 +22,8 @@ jobs:
           path: "."
       - terraform/apply:
           path: "."
+      - terraform/destroy:
+          path: "."
 
 workflows:
   validate-commands:
