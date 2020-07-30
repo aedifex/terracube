@@ -40,7 +40,12 @@ workflows:
        #     attach-workspace: true
        #     <<: *secrets
       - terraform/fmt:
-          checkout: false
+          checkout: true
           <<: *secrets
+      - terraform/validate:
+          checkout: true
+          <<: *secrets
+          requires:
+            - terraform/fmt
 
 
