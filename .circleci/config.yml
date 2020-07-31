@@ -51,5 +51,12 @@ workflows:
           checkout: true
           persist-workspace: true
           <<: *secrets
+          requires:
+            - terraform/fmt
+      - terraform/apply:
+          checkout: false
+          attach-workspace: true
+          requires:
+            - terraform/plan
 
 
