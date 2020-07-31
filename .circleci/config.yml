@@ -47,5 +47,9 @@ workflows:
           <<: *secrets
           requires:
             - terraform/fmt
+      - terraform/plan:
+          checkout: true
+          persist-workspace: true
+          <<: *secrets
 
 
