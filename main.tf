@@ -1,14 +1,11 @@
 provider "aws" {
   region = "us-west-1"
-  # Uncomment if you store your aws credentials file unconventionally.
-  # shared_credentials_file = "~/.aws/credentials"
-  # profile = var.aws_instance_profile
 }
 
 terraform {
   backend "s3" {
     bucket = "terracube"
-    key    = "terraform.tfstate"
+    key    = "refactor/terraform.tfstate"
     region = "us-west-1"
   }
 }
@@ -23,9 +20,6 @@ resource "aws_security_group" "instance" {
   }
 }
 
-variable "tag1" {}
-variable "tag2" {}
-
 resource "aws_instance" "example" {
   ami                    = "ami-059b818564104e5c6"
   instance_type          = "t2.micro"
@@ -35,11 +29,6 @@ resource "aws_instance" "example" {
               echo "<h1>Hello from CircleCI!</h1>" > index.html
               nohup busybox httpd -f -p 8080 &
               EOF
-  tags = {
-    Name = "terraform-example"
-    Tag1 = var.tag1
-    Tag2 = var.tag2
-  }
 }
 
 output "instance_ips" {

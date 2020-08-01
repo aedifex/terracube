@@ -4,7 +4,7 @@ secrets: &secrets
   context: cdk8s
 
 orbs:
-  terraform: circleci/terraform@dev:alpha
+  terraform: circleci/terraform@1.0.1
 
 jobs:
   test-terraform-lifecycle:
