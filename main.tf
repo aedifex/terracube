@@ -11,7 +11,7 @@ terraform {
 }
 
 resource "aws_security_group" "instance" {
-  name = "terracube-example"
+  name = "terracube-example-one"
   ingress {
     from_port   = 8080
     to_port     = 8080
