@@ -48,6 +48,7 @@ workflows:
           requires:
             - terraform/plan
       - terraform/destroy:
+          checkout: true
           <<: *secrets
           requires:
             - terraform/apply
