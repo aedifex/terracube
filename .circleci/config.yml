@@ -32,9 +32,13 @@ workflows:
   build-and-deploy:
     jobs:
       - terraform-plan
-      - terraform-apply:
+      - terraform-approve:
+          type: approval
           requires:
             - terraform-plan
+      - terraform-apply:
+          requires:
+            - terraform-approve
           filters:
             branches:
               only: main
