@@ -2,16 +2,16 @@ provider "aws" {
   region = "us-west-1"
 }
 
-terraform {
-  backend "s3" {
-    bucket = "terracube"
-    key    = "refactor/terraform.tfstate"
-    region = "us-west-1"
-  }
-}
+# terraform {
+#   backend "s3" {
+#     bucket = "terracube"
+#     key    = "refactor/terraform.tfstate"
+#     region = "us-west-1"
+#   }
+# }
 
 resource "aws_security_group" "instance" {
-  name = "terracube-example-one"
+  name = "terracube-example-two"
   ingress {
     from_port   = 8080
     to_port     = 8080
