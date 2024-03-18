@@ -1,56 +1,40 @@
 version: 2.1
 
-secrets: &secrets
-  context: cdk8s
-
-orbs:
-  terraform: circleci/terraform@1.0.1
-
 jobs:
-  test-terraform-lifecycle:
-    executor: terraform/terraform-executor
-    working_directory: "~/src"
+  terraform-plan:
+    docker:
+      - image: hashicorp/terraform:light
+    working_directory: ~/project
     steps:
       - checkout
-      - terraform/init:
-          path: "."
-      - terraform/validate:
-          path: "."
-      - terraform/fmt:
-          path: "."
-      - terraform/plan:
-          path: "."
-      - terraform/apply:
-          path: "."
-      - terraform/destroy:
-          path: "."
+      - run:
+          name: Terraform Init
+          command: terraform init
+#      - run:
+#          name: Terraform Plan
+#          command: terraform plan -out=tfplan
+
+  terraform-apply:
+    docker:
+      - image: hashicorp/terraform:light
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Terraform Init
+          command: terraform init
+#      - run:
+#          name: Terraform Apply
+#          command: terraform apply -auto-approve tfplan
 
 workflows:
-  validate-commands:
+  version: 2
+  build-and-deploy:
     jobs:
-      - terraform/fmt:
-          checkout: true
-          <<: *secrets
-      - terraform/validate:
-          checkout: true
-          <<: *secrets
+      - terraform-plan
+      - terraform-apply:
           requires:
-            - terraform/fmt
-      - terraform/plan:
-          checkout: true
-          persist-workspace: true
-          <<: *secrets
-          requires:
-            - terraform/validate
-      - terraform/apply:
-          attach-workspace: true
-          <<: *secrets
-          requires:
-            - terraform/plan
-      - terraform/destroy:
-          checkout: true
-          <<: *secrets
-          requires:
-            - terraform/apply
-
-
+            - terraform-plan
+          filters:
+            branches:
+              only: main
