@@ -39,6 +39,3 @@ workflows:
       - terraform-apply:
           requires:
             - terraform-approve
-          filters:
-            branches:
-              only: main
