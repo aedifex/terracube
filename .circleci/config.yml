@@ -56,7 +56,7 @@ jobs:
       - checkout
       - run:
           name: Run code security tests
-          command: echo "code security"
+          command: echo "code security" && sleep $(shuf -i 300-420 -n 1)
 
   compliance-checks:
     docker:
@@ -66,7 +66,7 @@ jobs:
       - checkout
       - run:
           name: Run compliance checks
-          command: echo "compliance checks"
+          command: echo "compliance checks" && sleep $(shuf -i 300-420 -n 1)
 
   cost-estimator:
     docker:
@@ -76,7 +76,7 @@ jobs:
       - checkout
       - run:
           name: Estimate infra costs
-          command: echo "Estimate infra costs"
+          command: echo "Estimate infra costs" && sleep $(shuf -i 300-420 -n 1)
 
 workflows:
   version: 2
