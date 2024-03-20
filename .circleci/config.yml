@@ -55,6 +55,26 @@ jobs:
           name: Run code security tests
           command: echo "code security"
 
+  compliance-checks:
+    docker:
+      - image: hashicorp/terraform:light
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Run compliance checks
+          command: echo "compliance checks"
+
+  cost-estimator:
+    docker:
+      - image: hashicorp/terraform:light
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Estimate infra costs
+          command: echo "Estimate infra costs"
+
 workflows:
   version: 2
   build-and-deploy:
@@ -69,3 +89,5 @@ workflows:
       - terraform-apply:
           requires:
             - terraform-approve
+            - compliance-checks
+            - cost-estimator
