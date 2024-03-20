@@ -8,6 +8,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup Terraform Credentials
+          command: |
+            mkdir -p ~/.terraform.d
+            echo '{"credentials": {"aedifexhack.jfrog.io": {"token": "$JFROG"}}}' > ~/.terraform.d/credentials.tfrc.json
+      - run:
           name: Terraform Init
           command: terraform init
 #      - run:
