@@ -15,9 +15,9 @@ jobs:
       - run:
           name: Terraform Init
           command: terraform init
-#      - run:
-#          name: Terraform Plan
-#          command: terraform plan -out=tfplan
+      - run:
+          name: Terraform Plan
+          command: terraform plan -out=tfplan
 
   terraform-apply:
     docker:
