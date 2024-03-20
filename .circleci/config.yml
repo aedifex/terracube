@@ -4,6 +4,9 @@ jobs:
   terraform-plan:
     docker:
       - image: hashicorp/terraform:light
+    environment:
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     working_directory: ~/project
     steps:
       - checkout
@@ -22,9 +25,17 @@ jobs:
   terraform-apply:
     docker:
       - image: hashicorp/terraform:light
+    environment:
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     working_directory: ~/project
     steps:
       - checkout
+      - run:
+          name: Setup Terraform Credentials
+          command: |
+            mkdir -p ~/.terraform.d
+            echo "{\"credentials\": {\"aedifexhack.jfrog.io\": {\"token\": \"${JFROG}\"}}}" > ~/.terraform.d/credentials.tfrc.json
       - run:
           name: Terraform Init
           command: terraform init
