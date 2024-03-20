@@ -21,7 +21,7 @@ terraform {
 
 provider "aws" {
   region  = "us-east-2"
-  profile = "aedifex_admin"
+#  profile = "aedifex_admin"
 }
 
 resource "aws_security_group" "allow_web" {
