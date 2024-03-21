@@ -99,9 +99,7 @@ workflows:
   plan-approve-apply:
     jobs:
       - connect-artifactory
-      - terraform-plan:
-          requires:
-            - connect-artifactory
+      - terraform-plan
       - iac-security-scanning:
           requires:
             - connect-artifactory
