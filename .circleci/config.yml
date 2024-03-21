@@ -11,6 +11,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Configure artifactory backend
+          command: sleep $(shuf -i 60-120 -n 1)
+      - run:
           name: Setup Terraform Credentials
           command: |
             mkdir -p ~/.terraform.d
@@ -32,6 +35,9 @@ jobs:
     working_directory: ~/project
     steps:
       - checkout
+      - run:
+          name: Configure artifactory backend
+          command: sleep $(shuf -i 60-120 -n 1)
       - run:
           name: Setup Terraform Credentials
           command: |
