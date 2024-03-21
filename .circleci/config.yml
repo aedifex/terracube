@@ -84,11 +84,24 @@ jobs:
           name: Estimate infra costs
           command: echo "Estimate infra costs" && sleep $(shuf -i 300-420 -n 1)
 
+  connect-artifactory:
+    docker:
+      - image: hashicorp/terraform:light
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Pull artifacts
+          command: echo "Estimate infra costs" && sleep $(shuf -i 300-420 -n 1)
+
 workflows:
   version: 2
   plan-approve-apply:
     jobs:
-      - terraform-plan
+      - connect-artifactory
+      - terraform-plan:
+          requires:
+            - connect-artifactory
       - iac-security-scanning
       - terraform-approve:
           type: approval
