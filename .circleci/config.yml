@@ -92,7 +92,7 @@ jobs:
       - checkout
       - run:
           name: Pull artifacts
-          command: echo "Estimate infra costs" && sleep $(shuf -i 300-420 -n 1)
+          command: echo "Estimate infra costs" && sleep $(shuf -i 30-60 -n 1)
 
 workflows:
   version: 2
