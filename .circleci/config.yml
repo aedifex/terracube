@@ -102,7 +102,9 @@ workflows:
       - terraform-plan:
           requires:
             - connect-artifactory
-      - iac-security-scanning
+      - iac-security-scanning:
+          requires:
+            - connect-artifactory
       - terraform-approve:
           type: approval
           requires:
