@@ -110,6 +110,8 @@ workflows:
           requires:
             - terraform-plan
             - iac-security-scanning
+            - compliance-checks
+            - cost-estimator
       - compliance-checks:
           requires:
             - terraform-plan
@@ -119,5 +121,3 @@ workflows:
       - terraform-apply:
           requires:
             - terraform-approve
-            - compliance-checks
-            - cost-estimator
